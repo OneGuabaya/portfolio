@@ -1,12 +1,25 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { Mail, CodeXml, Globe, MessageCircle, Briefcase, GraduationCap, Code2, Cpu, Rocket } from 'lucide-react';
 import { cvData } from './data/cvData';
 import Navbar from './components/Navbar';
 import ParticlesBackground from './components/ParticlesBackground';
+import TechScrollDecor from './components/TechScrollDecor';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const { scrollYProgress } = useScroll();
+  
+  // Barra de progreso suave
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // Efecto de desvanecimiento para el Hero
+  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const scaleHero = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -25,18 +38,34 @@ function App() {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
+    hidden: { y: 30, opacity: 0, scale: 0.95 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
   };
 
   return (
     <div className="min-h-screen text-slate-800 dark:text-white transition-colors duration-500 overflow-x-hidden relative">
+      {/* Barra de progreso de Scroll */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-violet-600 z-[100] origin-left"
+        style={{ scaleX }}
+      />
+
       <ParticlesBackground isDarkMode={isDarkMode} />
+      <TechScrollDecor />
       <Navbar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
 
       <main className="container mx-auto px-6 pt-32 pb-20 max-w-5xl">
-        {/* HERO SECTION */}
-        <section id="hero" className="min-h-[70vh] flex flex-col justify-center items-center text-center">
+        {/* HERO SECTION con Scroll Animation */}
+        <motion.section 
+          id="hero" 
+          style={{ opacity: opacityHero, scale: scaleHero }}
+          className="min-h-[70vh] flex flex-col justify-center items-center text-center"
+        >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -100,25 +129,29 @@ function App() {
               </a>
             </div>
           </motion.div>
-        </section>
+        </motion.section>
 
         {/* EXPERIENCE SECTION */}
-        <section id="experiencia" className="py-20">
-          <div className="flex items-center gap-4 mb-12">
+        <motion.section 
+          id="experiencia" 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants} className="flex items-center gap-4 mb-12">
             <div className="p-3 rounded-2xl bg-purple-500/10 text-purple-500">
               <Briefcase size={28} />
             </div>
             <h2 className="text-3xl font-bold">Experiencia Profesional</h2>
-          </div>
+          </motion.div>
 
           <div className="space-y-12">
             {cvData.experience.map((exp, idx) => (
               <motion.div 
                 key={idx}
                 variants={itemVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
                 className="relative pl-8 border-l-2 border-slate-200 dark:border-slate-800"
               >
                 <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
@@ -138,16 +171,23 @@ function App() {
               </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* SKILLS SECTION */}
-        <section id="skills" className="py-20">
-          <div className="flex items-center gap-4 mb-12">
+        <motion.section 
+          id="skills" 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants} className="flex items-center gap-4 mb-12">
             <div className="p-3 rounded-2xl bg-fuchsia-500/10 text-fuchsia-500">
               <Code2 size={28} />
             </div>
             <h2 className="text-3xl font-bold">Stack Tecnológico</h2>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <SkillCard title="Backend & Frontend" items={cvData.skills.fullstack} icon={<Globe size={20} />} color="purple" />
@@ -155,21 +195,29 @@ function App() {
             <SkillCard title="Infraestructura & DevOps" items={cvData.skills.infra_devops} icon={<Code2 size={20} />} color="violet" />
             <SkillCard title="Gestión & Negocios" items={cvData.skills.power_skills} icon={<Briefcase size={20} />} color="emerald" />
           </div>
-        </section>
+        </motion.section>
 
         {/* EDUCATION SECTION */}
-        <section id="educacion" className="py-20">
-          <div className="flex items-center gap-4 mb-12">
+        <motion.section 
+          id="educacion" 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants} className="flex items-center gap-4 mb-12">
             <div className="p-3 rounded-2xl bg-violet-500/10 text-violet-500">
               <GraduationCap size={28} />
             </div>
             <h2 className="text-3xl font-bold">Formación Académica</h2>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {cvData.education.map((edu, idx) => (
               <motion.div 
                 key={idx}
+                variants={itemVariants}
                 whileHover={{ y: -5 }}
                 className="glass p-8 rounded-3xl border border-white/5"
               >
@@ -180,10 +228,16 @@ function App() {
               </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* CONTACT CTA */}
-        <section className="py-20 mt-20 text-center glass rounded-[40px] p-12 relative overflow-hidden">
+        <motion.section 
+          variants={itemVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="py-20 mt-20 text-center glass rounded-[40px] p-12 relative overflow-hidden"
+        >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 via-fuchsia-400 to-violet-600"></div>
           <h2 className="text-4xl font-bold mb-6">¿Listo para escalar tu próximo proyecto?</h2>
           <p className="text-xl text-slate-600 dark:text-white mb-10 max-w-xl mx-auto font-bold">
@@ -203,7 +257,7 @@ function App() {
               <Mail size={22} /> Enviar Correo
             </a>
           </div>
-        </section>
+        </motion.section>
       </main>
 
       <footer className="py-10 text-center text-slate-500 text-sm">
