@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  transition: background-color 0.5s ease, color 0.5s ease;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.dark body {
+  background-color: #020617;
+  color: #ffffff !important;
+}
+
+/* Forzar blanco en modo oscuro para todos los textos */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark li, .dark span, .dark a, .dark div {
+  color: #ffffff;
+}
+
+/* Mantener los colores de acento y degradados */
+.dark .bg-clip-text {
+  color: transparent !important;
+}
+.dark .text-purple-500, .dark .text-violet-500, .dark .text-fuchsia-500, .dark .text-violet-400 {
+  color: inherit; /* Permite que el color de Tailwind funcione si es específico */
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .glass {
+    background: rgba(15, 23, 42, 0.3); /* Transparente para ver el fondo */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  }
+}
